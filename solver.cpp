@@ -124,19 +124,19 @@ ComplexVariable operator^(const ComplexVariable &x, const complex<double> power)
     
         if(power.imag() != 0) throw invalid_argument("complex power is not valid"); // caz power cannot be with i
     
-        if((power.real()>2 && x.getA()==complex<double>(0.0,0.0) && x.getB()==complex<double>(0.0,0.0)))
+        if((power.real()>2 && x.getA()==complex<double>(0.0,0.0) && x.getB()==complex<double>(0.0,0.0)))//power> 2 if and only if a and b are equal to 0 
             return ComplexVariable(0,0,pow(x.c,power));
     
-        if ((x.getA()!=complex<double>(0.0,0.0)) || (power.real()>2) || (power.real()<0)
+        if ((x.getA()!=complex<double>(0.0,0.0)) || (power.real()>2) || (power.real()<0) // if the power>2 and a!=0 throw an error
             throw std::out_of_range {" the power is not valid"};
             
-        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()!=complex<double>(0.0,0.0) && power.real()==2) 
-            return ComplexVariable(pow(x.getB(),power),x.getB()*x.getC()*power,pow(x.getC(),power));
+        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()!=complex<double>(0.0,0.0) && power.real()==2)// a==0 and b!=0, c!=0
+            return ComplexVariable(pow(x.getB(),power),x.getB()*x.getC()*power,pow(x.getC(),power)); //like:(3z+4)^2=(9z^2,24z,16)
             
-        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()==complex<double>(0.0,0.0) && power.real()==2) 
+        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()==complex<double>(0.0,0.0) && power.real()==2) // a==c==0, b!=0
             return ComplexVariable(pow(x.getB(),power),0,0);
             
-        if(power==complex<double>(0.0,1.0)) return x;
+        if(power==complex<double>(0.0,1.0)) return x; //?
         if(power==complex<double>(0.0,0.0)) return ComplexVariable(0,0,1);
 }
 
@@ -147,20 +147,20 @@ ComplexVariable operator==(const ComplexVariable &x, const complex<double> y) { 
 ComplexVariable operator==(const complex<double> y, const ComplexVariable &x) {return y-x;}
 
 
-complex<double> solve (const ComplexVariable & x){
+complex<double> solve (const ComplexVariable & x) {
+    
     complex<double> a = x.getA();
     complex<double> b = x.getB();
     complex<double> c = x.getC();
-    // maybe throw error about power>2
-    if(a==complex<double>(0.0,0.0)) {
-        if(b==complex<double>(0.0,0.0) && c!=complex<double>(0.0,0.0))
-            throw std::out_of_range {" there is no result "};
-        else return c/-b;
+   
+    if(a==complex<double>(0.0,0.0)) { // there is no z^2
+        if(b==complex<double>(0.0,0.0) && c!=complex<double>(0.0,0.0)) // there is no z (b) and there is c
+            throw std::out_of_range {" there is no result "};  // caz (0,0,c) cannot return Proper solution
+        else return c/-b; //  a==0 and c!=0, b!=0
     }
-    return (-b + sqrt(b * b - (a.real()*4+a.imag()*4) * c)) / ((2 * a.real() + 2 * a.imag()));
-
-
+    return (-b + sqrt(b * b - (a.real()*4+a.imag()*4) * c)) / ((2 * a.real() + 2 * a.imag())); // there is no else- caz in complex sqrt<0 is ok
 }
+            
 }
 
 
