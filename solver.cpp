@@ -62,7 +62,7 @@ RealVariable operator/(const double y, const RealVariable& x){ return RealVariab
     double a = x.getA();
     double b = x.getB();
     double c = x.getC();
-    // maybe throw error about power>2
+     
     if(a==0) { // its mean that we dont have x^2
         if(b==0 && c!=0) throw std::out_of_range {" there is no solution "}; // caz (0,0,c) cannot return Proper solution
         else return c/-b; // for example : 3x+2=0 ------> 3x=-2-------> x= -2/3
