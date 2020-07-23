@@ -57,70 +57,43 @@ RealVariable operator/(const double y, const RealVariable& x){ return RealVariab
 
 
 
- double solve(const RealVariable& x){
+ double solve(const RealVariable& x) {
+     
     double a = x.getA();
     double b = x.getB();
     double c = x.getC();
     // maybe throw error about power>2
-    if(a==0) {
-        if(b==0 && c!=0)
-            throw std::out_of_range {" there is no result "};
-        else return c/-b;
+    if(a==0) { // its mean that we dont have x^2
+        if(b==0 && c!=0) throw std::out_of_range {" there is no solution "}; // caz (0,0,c) cannot return Proper solution
+        else return c/-b; // for example : 3x+2=0 ------> 3x=-2-------> x= -2/3
     }
 
-    if ((b * b - 4 * a * c) > 0)
-        return (-b + sqrt(b * b - 4 * a * c)) / (2 * a);
-      //  return(-x.b + sqrt(x.b * x.b - 4 * x.a * x.c)) / (2 * x.a);
-
-    else if ((b * b - 4 * a * c) == 0)
-        return ((-b + sqrt(b * b - 4 * a * c)) / (2 * a));
-
-     throw std::out_of_range {"There is no a real solution"};
+     // else: a!=0 , there is x^2
+    if ((b * b - 4 * a * c) > 0) return (-b + sqrt(b * b - 4 * a * c)) / (2 * a); // sqrt > 0
+    else if ((b * b - 4 * a * c) == 0)  return ((-b + sqrt(b * b - 4 * a * c)) / (2 * a)); // sqrt == 0
+    throw std::out_of_range {"There is no a real solution"}; // sqrt < 0
 
 }
+    
+ ////////////////////////////////////////////////// ComplexVariable ////////////////////////////////////////////////////
 
-//********************************************************************************
+//  operator +
+ComplexVariable operator+(const ComplexVariable& x,const ComplexVariable &y ){return ComplexVariable(x.getA()+y.getA(),x.getB()+y.getB(),x.getC()+y.getC());}
+ComplexVariable operator+(const ComplexVariable& x, const complex<double> y ) { return ComplexVariable(x.getA(),x.getB(),x.getC()+y);}
+ComplexVariable operator+(const complex<double> y,const ComplexVariable& x){return ComplexVariable(x.getA(),x.getB(),x.getC()+y);}
 
+//  operator -
+ComplexVariable operator-(const ComplexVariable& x,const ComplexVariable &y ) {return ComplexVariable(x.getA()-y.getA(),x.getB()-y.getB(),x.getC()-y.getC());}
+ComplexVariable operator-(const ComplexVariable& x,const complex<double> y){return ComplexVariable(x.getA(),x.getB(),x.getC()-y);}
+ComplexVariable operator-(const complex<double> y,const ComplexVariable& x) { return ComplexVariable(x.getA(),x.getB(),y-x.getC());}
 
-
-
-ComplexVariable operator+(const ComplexVariable& x,const ComplexVariable &y ) {
-    return ComplexVariable(x.getA()+y.getA(),x.getB()+y.getB(),x.getC()+y.getC());
-}
-
-ComplexVariable operator+(const ComplexVariable& x, const complex<double> y ) {
-    return ComplexVariable(x.getA(),x.getB(),x.getC()+y);
-}
-ComplexVariable operator+(const complex<double> y,const ComplexVariable& x){
-return ComplexVariable(x.getA(),x.getB(),x.getC()+y);
-}
-
-
-// - operator
-ComplexVariable operator-(const ComplexVariable& x,const ComplexVariable &y ) {
-    return ComplexVariable(x.getA()-y.getA(),x.getB()-y.getB(),x.getC()-y.getC());
-}
-ComplexVariable operator-(const ComplexVariable& x,const complex<double> y){
-return ComplexVariable(x.getA(),x.getB(),x.getC()-y);
-}
-ComplexVariable operator-(const complex<double> y,const ComplexVariable& x) {
-    return ComplexVariable(x.getA(),x.getB(),y-x.getC());
-}
+// operator *
+ComplexVariable operator*(const ComplexVariable& x, const ComplexVariable &y) {return ComplexVariable(x.getA() * y.getC() + y.getA() * x.getC() + x.getC() * y.getB() ,x.getB() * y.getC() + y.getB() * x.getC(),x.getC() * y.getC());}
+ComplexVariable operator*(const ComplexVariable& x, const complex<double> y) {return ComplexVariable(x.getA()*y, x.getB()*y, x.getC()*y);}
+ComplexVariable operator*(const complex<double> y,const ComplexVariable& x) { return ComplexVariable(x.getA()*y,x.getB()*y,x.getC()*y);}
 
 
-//* operator
-ComplexVariable operator*(const ComplexVariable& x, const ComplexVariable &y) {
-    return ComplexVariable(x.getA() * y.getC() + y.getA() * x.getC() + x.getC() * y.getB() ,x.getB() * y.getC() + y.getB() * x.getC(),x.getC() * y.getC());
-}
-ComplexVariable operator*(const ComplexVariable& x, const complex<double> y) {
-    return ComplexVariable(x.getA()*y, x.getB()*y, x.getC()*y);
-}
-ComplexVariable operator*(const complex<double> y,const ComplexVariable& x) {
-    return ComplexVariable(x.getA()*y,x.getB()*y,x.getC()*y);
-}
-
-
-//: operator
+// operator /
 ComplexVariable operator/(const ComplexVariable& x, const ComplexVariable &y) {
     if (y.getA() == complex<double >(0.0,0.0) && y.getB() == complex<double >(0.0,0.0) && y.getC() == complex<double>(0.0,0.0)) throw invalid_argument("division by zero is not possible !");
     else {
@@ -133,8 +106,6 @@ ComplexVariable operator/(const ComplexVariable& x, const ComplexVariable &y) {
     }
 }
 
-
-
 ComplexVariable operator/(const ComplexVariable& x, const complex<double> y) {
     if (y != complex<double>(0.0,0.0)) {
         return ComplexVariable(x.getA() / y, x.getB() / y, x.getC() / y);
@@ -142,7 +113,7 @@ ComplexVariable operator/(const ComplexVariable& x, const complex<double> y) {
 }
 
 
-// ^ operator
+//  operator ^
 ComplexVariable operator^(const ComplexVariable &x, const complex<double> power) {
         if(power.imag() != 0) throw invalid_argument("complex power is not valid");
         if((power.real()>2 && x.getA()==complex<double>(0.0,0.0) && x.getB()==complex<double>(0.0,0.0))) return ComplexVariable(0,0,pow(x.c,power));
@@ -154,7 +125,7 @@ ComplexVariable operator^(const ComplexVariable &x, const complex<double> power)
 }
 
 
-// == operator
+// operator ==
 ComplexVariable operator==(const ComplexVariable &x, const ComplexVariable &y) {return x-y;}
 ComplexVariable operator==(const ComplexVariable &x, const complex<double> y) { return x-y;}
 ComplexVariable operator==(const complex<double> y, const ComplexVariable &x) {return y-x;}
@@ -171,7 +142,7 @@ complex<double> solve (const ComplexVariable & x){
         else return c/-b;
     }
     return (-b + sqrt(b * b - (a.real()*4+a.imag()*4) * c)) / ((2 * a.real() + 2 * a.imag()));
-    //return (-b - sqrt(b * b - 4 * a * c)) / (2 * a);
+
 
 }
 
@@ -191,17 +162,6 @@ complex<double> solve (const ComplexVariable & x){
 
 
 }
-
-
-
-
-
-
-
-
-
-
-
 
 
 
