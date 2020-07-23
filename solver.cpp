@@ -88,45 +88,61 @@ ComplexVariable operator-(const ComplexVariable& x,const complex<double> y){retu
 ComplexVariable operator-(const complex<double> y,const ComplexVariable& x) { return ComplexVariable(x.getA(),x.getB(),y-x.getC());}
 
 // operator *
-ComplexVariable operator*(const ComplexVariable& x, const ComplexVariable &y) {return ComplexVariable(x.getA() * y.getC() + y.getA() * x.getC() + x.getC() * y.getB() ,x.getB() * y.getC() + y.getB() * x.getC(),x.getC() * y.getC());}
+ComplexVariable operator*(const ComplexVariable& x, const ComplexVariable &y) {
+    return ComplexVariable(x.getA() * y.getC() + y.getA() * x.getC() + x.getC() * y.getB(),
+                           x.getB() * y.getC() + y.getB() * x.getC(),
+                           x.getC() * y.getC());
+}
 ComplexVariable operator*(const ComplexVariable& x, const complex<double> y) {return ComplexVariable(x.getA()*y, x.getB()*y, x.getC()*y);}
 ComplexVariable operator*(const complex<double> y,const ComplexVariable& x) { return ComplexVariable(x.getA()*y,x.getB()*y,x.getC()*y);}
 
 
 // operator /
 ComplexVariable operator/(const ComplexVariable& x, const ComplexVariable &y) {
-    if (y.getA() == complex<double >(0.0,0.0) && y.getB() == complex<double >(0.0,0.0) && y.getC() == complex<double>(0.0,0.0)) throw invalid_argument("division by zero is not possible !");
+    if (y.getA() == complex<double >(0.0,0.0) && y.getB() == complex<double >(0.0,0.0) && y.getC() == complex<double>(0.0,0.0))//(y.a)=(y.b)=(y.c)==0
+        throw invalid_argument("division by zero is not possible !"); // caz we divided by y that equals to 0
     else {
-        if (y.getA() == complex<double>(0.0,0.0) && y.getB() == complex<double>(0.0,0.0) && y.getC() != complex<double>(0.0,0.0))
-            return ComplexVariable(x.getA() / y.getC(), x.getB() / y.getC(), x.getC() / y.getC());
-        if (y.getA() == complex<double>(0.0,0.0) && y.getB() == complex<double>(0.0,0.0) && y.getC() != complex<double>(0.0,0.0))
-            return ComplexVariable(x.getA() / y.getC(), x.getB() / y.getC(), x.getC() / y.getC());
-        if (y.getA() != complex<double>(0.0,0.0) && y.getB() != complex<double>(0.0,0.0) && y.getC() == complex<double>(0.0,0.0)) return ComplexVariable(x.getA() / y.getA(), x.getB() / y.getB(), 0);
-        if (y.getA() == complex<double>(0.0,0.0) && y.getB() != complex<double>(0.0,0.0) && y.getC() == complex<double>(0.0,0.0)) return ComplexVariable(0, x.getB() / y.getB(), 0);
+        if (y.getA() == complex<double>(0.0,0.0) && y.getB() == complex<double>(0.0,0.0) && y.getC() != complex<double>(0.0,0.0))//(y.a)=(y.b)==0 and (y.c)!=0
+            return ComplexVariable(x.getA() / y.getC(), x.getB() / y.getC(), x.getC() / y.getC()); //like:x/y=(z^2+3z+2)/(5+i)=z^2/(5+i)+3z/(5+i)+2/(5+i)
+//         if (y.getA() == complex<double>(0.0,0.0) && y.getB() == complex<double>(0.0,0.0) && y.getC() != complex<double>(0.0,0.0))
+//             return ComplexVariable(x.getA() / y.getC(), x.getB() / y.getC(), x.getC() / y.getC());
+        if (y.getA() != complex<double>(0.0,0.0) && y.getB() != complex<double>(0.0,0.0) && y.getC() == complex<double>(0.0,0.0)) return ComplexVariable(x.getA() / y.getA(), x.getB() / y.getB(), 0); //?
+        if (y.getA() == complex<double>(0.0,0.0) && y.getB() != complex<double>(0.0,0.0) && y.getC() == complex<double>(0.0,0.0)) return ComplexVariable(0, x.getB() / y.getB(), 0); //?
     }
 }
 
 ComplexVariable operator/(const ComplexVariable& x, const complex<double> y) {
-    if (y != complex<double>(0.0,0.0)) {
+    if (y != complex<double>(0.0,0.0)) { // y!=0
         return ComplexVariable(x.getA() / y, x.getB() / y, x.getC() / y);
-    } else throw invalid_argument("division by zero is not possible !");
+    } 
+    else throw invalid_argument("division by zero is not possible !");
 }
 
 
 //  operator ^
 ComplexVariable operator^(const ComplexVariable &x, const complex<double> power) {
-        if(power.imag() != 0) throw invalid_argument("complex power is not valid");
-        if((power.real()>2 && x.getA()==complex<double>(0.0,0.0) && x.getB()==complex<double>(0.0,0.0))) return ComplexVariable(0,0,pow(x.c,power));
-        if ((x.getA()!=complex<double>(0.0,0.0)) || (power.real()>2) || (power.real()<0) ) throw std::out_of_range {" the power is not valid"};
-        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()!=complex<double>(0.0,0.0) && power.real()==2) return ComplexVariable(pow(x.getB(),power),x.getB()*x.getC()*power,pow(x.getC(),power));
-        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()==complex<double>(0.0,0.0) && power.real()==2) return ComplexVariable(pow(x.getB(),power),0,0);
+    
+        if(power.imag() != 0) throw invalid_argument("complex power is not valid"); // caz power cannot be with i
+    
+        if((power.real()>2 && x.getA()==complex<double>(0.0,0.0) && x.getB()==complex<double>(0.0,0.0)))
+            return ComplexVariable(0,0,pow(x.c,power));
+    
+        if ((x.getA()!=complex<double>(0.0,0.0)) || (power.real()>2) || (power.real()<0)
+            throw std::out_of_range {" the power is not valid"};
+            
+        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()!=complex<double>(0.0,0.0) && power.real()==2) 
+            return ComplexVariable(pow(x.getB(),power),x.getB()*x.getC()*power,pow(x.getC(),power));
+            
+        if(x.getB()!=complex<double>(0.0,0.0) && x.getC()==complex<double>(0.0,0.0) && power.real()==2) 
+            return ComplexVariable(pow(x.getB(),power),0,0);
+            
         if(power==complex<double>(0.0,1.0)) return x;
         if(power==complex<double>(0.0,0.0)) return ComplexVariable(0,0,1);
 }
 
 
 // operator ==
-ComplexVariable operator==(const ComplexVariable &x, const ComplexVariable &y) {return x-y;}
+ComplexVariable operator==(const ComplexVariable &x, const ComplexVariable &y) {return x-y;} // if x-y==0 we get 0 that is true, else- 1 is false
 ComplexVariable operator==(const ComplexVariable &x, const complex<double> y) { return x-y;}
 ComplexVariable operator==(const complex<double> y, const ComplexVariable &x) {return y-x;}
 
@@ -145,22 +161,6 @@ complex<double> solve (const ComplexVariable & x){
 
 
 }
-
-//change
-//    double solve(const bool equation) {
-//        if(!equation) {
-//            throw invalid_argument("mathematical error, false phrase");
-//        }
-//        else {
-//            return 0;
-//        }
-//    }
-//
-//    bool RealVariable::operator! () const {
-//        return this->a == 0 && this->b == 0 && this->c == 0;
-//    }
-
-
 }
 
 
